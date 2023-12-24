@@ -6,6 +6,8 @@ import { Dropdown } from 'semantic-ui-react'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment"
+import { Slide, ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 
 function AddTransaction() {
 
@@ -32,7 +34,7 @@ function AddTransaction() {
     ]
 
     const [transactionType, setTransactionType] = useState("")
-
+    const toastId = 'added-tranaction';
     /* Adding a Transaction */
     const addTransaction = async (e) => {
         e.preventDefault()
@@ -76,18 +78,40 @@ function AddTransaction() {
                     setToDate(null)
                     setFromDateString(null)
                     setToDateString(null)
-                    alert("Transaction was Successfull 🎉")
+                    toast.success("Trasaction was Successfull", {
+                        position: toast.POSITION.TOP_CENTER,
+                        autoClose: 3000, //3 seconds
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId,
+                        transition: Slide
+                      });
+                    //alert("Transaction was Successfull 🎉")
                 }
                 catch (err) {
-                    console.log(err)
+                    toast.error('err', {
+                        position: toast.POSITION.TOP_RIGHT,
+                        toastId
+                      });
                 }
             }
             else{
-                alert("The book is not available")
+                // /alert("The book is not available")
+                toast.error('The book is not available', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    toastId
+                  });
+
             }
         }
         else {
-            alert("Fields must not be empty")
+            //alert("Fields must not be empty")
+            toast.error('Field must be not empty', {
+                position: toast.POSITION.TOP_RIGHT,
+                toastId
+              });
         }
         setIsLoading(false)
     }
@@ -161,6 +185,7 @@ function AddTransaction() {
         <div>
             <p className="dashboard-option-title">Add a Transaction</p>
             <div className="dashboard-title-line"></div>
+            <div className="toast-container"><ToastContainer limit={2}/></div>
             <form className='transaction-form' onSubmit={addTransaction}>
                 <label className="transaction-form-label" htmlFor="borrowerId">Borrower<span className="required-field">*</span></label><br />
                 <div className='semanticdropdown'>

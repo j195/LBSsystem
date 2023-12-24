@@ -1,8 +1,32 @@
 import express from "express"
 import Book from "../models/Book.js"
 import BookCategory from "../models/BookCategory.js"
+import multer from "multer"
 
 const router = express.Router()
+
+const DIR = 'images/';
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, DIR);
+    },
+    filename: (req, file, cb) => {
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, Date.now() + '-' + fileName)
+    }
+});
+var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+});
+
 
 /* Get all books in the db */
 router.get("/allbooks", async (req, res) => {
@@ -39,9 +63,11 @@ router.get("/", async (req, res) => {
 })
 
 /* Adding book */
-router.post("/addbook", async (req, res) => {
+router.post("/addbook",upload.single('bookImage'),async (req, res) => {
+    
     if (req.body.isAdmin) {
         try {
+            const url = req.protocol + '://' + req.get('host')
             const newbook = await new Book({
                 bookName: req.body.bookName,
                 alternateTitle: req.body.alternateTitle,
@@ -50,7 +76,8 @@ router.post("/addbook", async (req, res) => {
                 language: req.body.language,
                 publisher: req.body.publisher,
                 bookStatus: req.body.bookSatus,
-                categories: req.body.categories
+                categories: req.body.categories,
+                bookImage: url + '/images/' + req.file.filename
             })
             const book = await newbook.save()
             await BookCategory.updateMany({ '_id': book.categories }, { $push: { books: book._id } });

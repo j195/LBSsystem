@@ -9,6 +9,10 @@ const BookSchema = new mongoose.Schema({
         type:String,
         default:""
     },
+    bookImage:{
+        type:String,
+        default:""
+    },
     author:{
         type:String,
         require:true

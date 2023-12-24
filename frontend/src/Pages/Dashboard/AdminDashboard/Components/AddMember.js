@@ -5,6 +5,8 @@ import { Dropdown } from 'semantic-ui-react'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import { Slide, ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 
 function AddMember() {
 
@@ -40,6 +42,7 @@ function AddMember() {
     const addMember = async (e) => {
         e.preventDefault()
         setIsLoading(true)
+        const toastId = 'added-member';
         if (userFullName !== null && userType !== null && age !== null && dobString !== null && gender !== null && address !== null && mobileNumber !== null && email !== null && password !== null) {
             const userData = {
                 userType: userType,
@@ -72,18 +75,36 @@ function AddMember() {
                 setAge(null)
                 setDob(null)
                 setDobString(null)
-                alert("Member Added")
+                toast.success("Member Added Successfully", {
+                    position: toast.POSITION.TOP_CENTER,
+                    autoClose: 3000, //3 seconds
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId,
+                    transition: Slide
+                  });
+               // alert("Member Added")
             }
             catch (err) {
-                console.log(err)
+                //console.log(err)
+                toast.error('Could not added Member, please try again later', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    toastId
+                  });
             }
         }
         else {
-            alert("All the fields must be filled")
+            //alert("All the fields must be filled")
+            toast.error('All the fields must be filled', {
+                position: toast.POSITION.TOP_RIGHT,
+                toastId
+              });
         }
         setIsLoading(false)
     }
-
+   const toastId = 'list-members'
     //Fetch Members
     useEffect(() => {
         const getMembers = async () => {
@@ -93,7 +114,11 @@ function AddMember() {
                 setRecentAddedMembers(recentMembers)
             }
             catch (err) {
-                console.log(err)
+                //console.log(err)
+                toast.error('Member listing failed', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    toastId
+                  });
             }
         }
         getMembers()
@@ -103,6 +128,7 @@ function AddMember() {
         <div>
             <p className="dashboard-option-title">Add a Member</p>
             <div className="dashboard-title-line"></div>
+            <div className="toast-container"><ToastContainer limit={2}/></div>
             <form className="addmember-form" onSubmit={addMember}>
                 <div className='semanticdropdown'>
                     <Dropdown
