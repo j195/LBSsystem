@@ -25,8 +25,9 @@ function AddBook() {
     const onFileChange = (e) => {
         setBookImage(e.target.files[0]);
       };
+    
     const toastId = 'added-book';
-
+    
     /* Fetch all the Categories */
     useEffect(() => {
         const getAllCategories = async () => {
@@ -63,6 +64,7 @@ function AddBook() {
          //   bookImage: bookImage,
          //   isAdmin: user.isAdmin
         //}
+        
         const formData = new FormData()
         formData.append("bookName",bookName);
         formData.append("alternateTitle", alternateTitle);
@@ -74,7 +76,13 @@ function AddBook() {
         formData.append("bookImage", bookImage);
         formData.append("isAdmin", user.isAdmin);
         try {
-            
+            if(bookImage === undefined){
+                toast.error('Book Image is required', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    toastId
+                  });
+                  
+            }    
            // const response = await axios.post(API_URL + "api/books/addbook", BookData)
            const response = await axios.post(API_URL + "api/books/addbook", formData, { headers: {'Content-Type': 'multipart/form-data'}})
             if (recentAddedBooks.length >= 5) {
